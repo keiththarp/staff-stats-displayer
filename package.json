@@ -1,0 +1,25 @@
+{
+  "name": "staff-stats",
+  "version": "1.0.0",
+  "description": "Employee Details Tracker",
+  "main": "index.js",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^6.2.1",
+    "mysql": "^2.16.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/keiththarp/staff-stats-displayer.git"
+  },
+  "author": "Keith Tharp",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/keiththarp/staff-stats-displayer/issues"
+  },
+  "homepage": "https://github.com/keiththarp/staff-stats-displayer#readme"
+}
