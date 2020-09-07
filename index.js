@@ -1,6 +1,13 @@
-const connection = require("./database/connection.js")
+// Get the database connection
+const connection = require("./database/connection")
+// Inquirer for the questions
 const inquirer = require("inquirer");
+// console.table for the formatting
 const cTable = require("console.table");
+
+// Bring in our question objects
+const startQuestions = require("./questions/startQuestions");
+const mainQuestions = require("./questions/mainQuestions");
 
 // Continue or quit function
 anotherTask = () => {
@@ -26,13 +33,7 @@ anotherTask = () => {
     })
 };
 
-const roleOptions = [];
-connection.query("SELECT title FROM role", (err, res) => {
-  if (err) throw err;
-  res.forEach(element => {
-    roleOptions.push(element.title);
-  });
-})
+
 
 const mngrOptions = [];
 connection.query(`SELECT CONCAT (e.first_name, " ", e.last_name) AS Manager FROM employee e INNER JOIN role ON e.role_id = 3`, (err, res) => {
@@ -138,23 +139,7 @@ createRecord = () => {
 
         // Create new ROLE record
         case 'Role':
-          inquirer.prompt([
-            {
-              type: "input",
-              name: "title",
-              message: "Title for new role?",
-            },
-            {
-              type: "input",
-              name: "salary",
-              message: "Salary for new role?"
-            },
-            {
-              type: "input",
-              name: "departmentID",
-              message: "Department ID role belongs to?"
-            }
-          ])
+          inquirer.prompt(mainQuestions.role)
             .then(input => {
               connection.query(
                 "INSERT INTO role SET ?",
@@ -176,30 +161,7 @@ createRecord = () => {
 
         // Create new EMPLOYEE record
         case 'Employee':
-          inquirer.prompt([
-            {
-              type: "input",
-              name: "firstName",
-              message: "New employee's first name?",
-            },
-            {
-              type: "input",
-              name: "lastName",
-              message: "Last name?"
-            },
-            {
-              type: "list",
-              name: "roleID",
-              message: "Employee role?",
-              choices: roleOptions // Need to assign the appropriate value to this.
-            },
-            {
-              type: "input",
-              name: "managerID",
-              message: "Manager ID?",
-              default: ''
-            }
-          ])
+          inquirer.prompt(mainQuestions.employee)
             .then(input => {
               if (input.managerID === '') {
                 connection.query(
@@ -273,17 +235,7 @@ viewRecord = () => {
 
 // Starting inquirer function to determine user desires
 start = () => {
-
-  inquirer.prompt({
-    type: "list",
-    name: "CRUD",
-    message: "What would you like to do?",
-    choices: [
-      'Create',
-      'View',
-      'Update'
-    ]
-  })
+  inquirer.prompt(startQuestions)
     .then(choice => {
       const crud = choice.CRUD;
       switch (crud) {
@@ -296,9 +248,6 @@ start = () => {
         case 'Update':
           updateRecord();
           break;
-        default:
-          text = 'You must make a selection.';
-          start();
       };
 
     });
