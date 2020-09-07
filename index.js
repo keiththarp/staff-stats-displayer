@@ -1,20 +1,6 @@
-const mysql = require("mysql");
+const connection = require("./database/connection.js")
 const inquirer = require("inquirer");
-
-// connection information for the sql database
-const connection = mysql.createConnection({
-  host: "localhost",
-  port: 3306,
-  user: "root",
-  password: "<07KT&44kt>",
-  database: "staff-stats-d"
-});
-
-// connecting to the server and DB
-connection.connect(function (err) {
-  if (err) throw err;
-
-});
+const cTable = require("console.table");
 
 // Continue or quit function
 anotherTask = () => {
@@ -39,6 +25,26 @@ anotherTask = () => {
       }
     })
 };
+
+const roleOptions = [];
+connection.query("SELECT title FROM role", (err, res) => {
+  if (err) throw err;
+  res.forEach(element => {
+    roleOptions.push(element.title);
+  });
+})
+
+const mngrOptions = [];
+connection.query(`SELECT CONCAT (e.first_name, " ", e.last_name) AS Manager FROM employee e INNER JOIN role ON e.role_id = 3`, (err, res) => {
+  if (err) throw err;
+
+  console.log(res);
+  // res.forEach(element => {
+  //   roleOptions.push(element.title);
+  // });
+})
+
+
 
 // ***** Function queries to display tables
 // Display the DEPARTMENTS table
@@ -71,20 +77,6 @@ displayRoles = () => {
   });
 };
 
-// Display the EMPLOYEES table
-// displayEmployees = () => {
-//   console.log("*** EMPLOYEES Table ***");
-//   connection.query("SELECT * FROM employee", function (err, res) {
-//     if (err) throw err;
-//     // Display the Department Table
-//     console.log(`ID | First Name | Last Name | Role ID | Manager ID \n-------------------------------------------`);
-//     res.forEach(element => {
-//       console.log(` ${element.id} | ${element.first_name} | ${element.last_name} | ${element.role_id} | ${element.manager_id}`);
-//     });
-//     console.log(`\n`);
-//     anotherTask();
-//   });
-// };
 
 // Display the EMPLOYEES table
 displayEmployees = () => {
@@ -196,9 +188,10 @@ createRecord = () => {
               message: "Last name?"
             },
             {
-              type: "input",
+              type: "list",
               name: "roleID",
-              message: "Role ID?"
+              message: "Employee role?",
+              choices: roleOptions // Need to assign the appropriate value to this.
             },
             {
               type: "input",
