@@ -40,7 +40,7 @@ anotherTask = () => {
     })
 };
 
-// ***** Functions to display tables
+// ***** Function queries to display tables
 // Display the DEPARTMENTS table
 displayDepartments = () => {
   console.log("*** Departments Table ***");
@@ -49,7 +49,7 @@ displayDepartments = () => {
     // Display the Department Table
     console.log(`ID | Department \n-------------------------------------------`);
     res.forEach(element => {
-      console.log(` ${element.id} | ${element.name}`);
+      console.log(`${element.id}  | ${element.name}`);
     });
     console.log(`\n`);
     anotherTask();
@@ -72,19 +72,37 @@ displayRoles = () => {
 };
 
 // Display the EMPLOYEES table
+// displayEmployees = () => {
+//   console.log("*** EMPLOYEES Table ***");
+//   connection.query("SELECT * FROM employee", function (err, res) {
+//     if (err) throw err;
+//     // Display the Department Table
+//     console.log(`ID | First Name | Last Name | Role ID | Manager ID \n-------------------------------------------`);
+//     res.forEach(element => {
+//       console.log(` ${element.id} | ${element.first_name} | ${element.last_name} | ${element.role_id} | ${element.manager_id}`);
+//     });
+//     console.log(`\n`);
+//     anotherTask();
+//   });
+// };
+
+// Display the EMPLOYEES table
 displayEmployees = () => {
   console.log("*** EMPLOYEES Table ***");
-  connection.query("SELECT * FROM employee", function (err, res) {
-    if (err) throw err;
-    // Display the Department Table
-    console.log(`ID | First Name | Last Name | Role ID | Manager ID \n-------------------------------------------`);
-    res.forEach(element => {
-      console.log(` ${element.id} | ${element.first_name} | ${element.last_name} | ${element.role_id} | ${element.manager_id}`);
+  connection.query(`SELECT CONCAT( e.first_name, " ", e.last_name ) AS Employee, title AS Title, salary AS Salary, name AS Department, CONCAT( m.first_name, " ", m.last_name ) AS Manager
+  FROM employee e
+  LEFT JOIN role ON e.role_id = role.id
+  LEFT JOIN department ON role.department_id = department.id
+  LEFT JOIN employee m ON m.id = e.manager_id`,
+    function (err, res) {
+      if (err) throw err;
+      // Display the Department Table
+      console.table(res);
+      console.log(`\n`);
+      anotherTask();
     });
-    console.log(`\n`);
-    anotherTask();
-  });
 };
+
 
 // Create!! Determine which type of record to create then create it.
 createRecord = () => {
@@ -185,29 +203,76 @@ createRecord = () => {
             {
               type: "input",
               name: "managerID",
-              message: "Manager ID?"
+              message: "Manager ID?",
+              default: ''
             }
           ])
             .then(input => {
-              connection.query(
-                "INSERT INTO employee SET ?",
-                {
-                  first_name: input.firstName,
-                  last_name: input.lastName,
-                  role_id: input.roleID,
-                  manager_id: input.managerID
-                },
-                function (err, res) {
-                  if (err) throw err;
-                  console.log(`-`);
-                  console.log(`${input.firstName} ${input.lastName} added to database.`);
-                  console.log(`-`);
-                  displayEmployees();
-                }
-              )
+              if (input.managerID === '') {
+                connection.query(
+                  "INSERT INTO employee SET ?",
+                  {
+                    first_name: input.firstName,
+                    last_name: input.lastName,
+                    role_id: input.roleID
+                  },
+                  function (err, res) {
+                    if (err) throw err;
+                    console.log(`-`);
+                    console.log(`${input.firstName} ${input.lastName} added to database.`);
+                    console.log(`-`);
+                    displayEmployees();
+                  }
+                )
+              } else {
+                connection.query(
+
+                  "INSERT INTO employee SET ?",
+                  {
+                    first_name: input.firstName,
+                    last_name: input.lastName,
+                    role_id: input.roleID,
+                    manager_id: input.managerID
+                  },
+                  function (err, res) {
+                    if (err) throw err;
+                    console.log(`-`);
+                    console.log(`${input.firstName} ${input.lastName} added to database.`);
+                    console.log(`-`);
+                    displayEmployees();
+                  }
+                )
+              }
             });
           break;
 
+      };
+    });
+};
+
+viewRecord = () => {
+  inquirer.prompt({
+    type: "list",
+    name: "view",
+    message: "Which table would you ike to view?",
+    choices: [
+      'Employees',
+      'Departments',
+      'Roles'
+    ]
+  })
+    .then(choice => {
+      const view = choice.view
+      switch (view) {
+        case 'Employees':
+          displayEmployees();
+          break;
+        case 'Departments':
+          displayDepartments();
+          break;
+        case 'Roles':
+          displayRoles();
+          break;
       };
     });
 };
