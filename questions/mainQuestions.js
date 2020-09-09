@@ -1,7 +1,7 @@
 const connection = require("../database/connection")
 const roleOptions = [];
 
-connection.query("SELECT title FROM role", (err, res) => {
+connection.query("SELECT id title FROM role", (err, res) => {
   if (err) throw err;
   res.forEach(element => {
     roleOptions.push(element.title);
