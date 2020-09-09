@@ -9,20 +9,6 @@ const cTable = require("console.table");
 const startQuestions = require("./questions/startQuestions");
 const mainQuestions = require("./questions/mainQuestions");
 
-const roleOptions = [];
-
-connection.query("SELECT id, title FROM role", (err, res) => {
-  if (err) throw err;
-  res.forEach(element => {
-    roleOptions.push(
-      {
-        title: element.title,
-        id: element.id
-      });
-  });
-  console.log(roleOptions);
-})
-
 
 // Continue or quit function
 anotherTask = () => {
@@ -49,18 +35,21 @@ anotherTask = () => {
 };
 
 
-
+// THis is not working yet, but the roles selection is, so we're pushing that!
 const mngrOptions = [];
 connection.query(`SELECT CONCAT (e.first_name, " ", e.last_name) AS Manager, id FROM employee e where e.role_id = 3`, (err, res) => {
   if (err) throw err;
-
-  console.log(res);
-  // res.forEach(element => {
-  //   roleOptions.push(element.title);
-  // });
-})
-
-
+  console.log(`This is the res in mngr query ${res[0].Manager}`);
+  res.forEach(element => {
+    mngrOptions.push(
+      {
+        Manager: element.Manager,
+        id: element.id
+      }
+    )
+  })
+  console.log(`manager options ${mngrOptions}`);
+});
 
 // ***** Function queries to display tables
 // Display the DEPARTMENTS table

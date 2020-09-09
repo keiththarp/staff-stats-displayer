@@ -1,14 +1,37 @@
 const connection = require("../database/connection")
+
+
+// Query for ROLE titles
 const roleOptions = [];
 
-connection.query("SELECT id title FROM role", (err, res) => {
+connection.query("SELECT id, title FROM role", (err, res) => {
   if (err) throw err;
   res.forEach(element => {
-    roleOptions.push(element.title);
+    roleOptions.push(
+      {
+        title: element.title,
+        id: element.id
+      });
   });
-})
+});
+
+// Query for MANAGEMENT titles
+const mngrOptions = [];
+connection.query(`SELECT CONCAT (e.first_name, " ", e.last_name) AS Manager, id FROM employee e where e.role_id = 3`, (err, res) => {
+  if (err) throw err;
+  res.forEach(element => {
+    mngrOptions.push(
+      {
+        Manager: element.Manager,
+        id: element.id
+      }
+    )
+  })
+});
+console.log(mngrOptions);
 
 const mainQuestions = {
+
 
   // CRESTE NEW ROLE QUESTIONS
   role: [
@@ -45,7 +68,17 @@ const mainQuestions = {
       type: "list",
       name: "roleID",
       message: "Employee role?",
-      choices: roleOptions // Need to assign the appropriate value to this.
+      choices: function () {
+        const roleArr = [];
+        roleOptions.forEach((role) => {
+          const roleChoices = {
+            name: role.title,
+            value: role.id
+          };
+          roleArr.push(roleChoices);
+        });
+        return roleArr;
+      },
     },
     {
       type: "input",
