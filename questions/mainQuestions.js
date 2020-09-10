@@ -28,12 +28,25 @@ connection.query(`SELECT CONCAT (e.first_name, " ", e.last_name) AS Manager, id 
     )
   })
 });
-console.log(mngrOptions);
+
+// Query for DEPARTMENT names
+const deptOptions = [];
+connection.query(`SELECT * FROM department`, (err, res) => {
+  if (err) throw err;
+  res.forEach(element => {
+    deptOptions.push(
+      {
+        name: element.name,
+        id: element.id
+      }
+    )
+  })
+});
 
 const mainQuestions = {
 
 
-  // CRESTE NEW ROLE QUESTIONS
+  // CREATE NEW ROLE QUESTIONS
   role: [
     {
       type: "input",
@@ -46,9 +59,20 @@ const mainQuestions = {
       message: "Salary for new role?"
     },
     {
-      type: "input",
-      name: "departmentID",
-      message: "Department ID role belongs to?"
+      type: "list",
+      name: "deptID",
+      message: "Department?",
+      choices: function () {
+        const deptArr = [];
+        deptOptions.forEach((dept) => {
+          const deptChoices = {
+            name: dept.name,
+            value: dept.id
+          };
+          deptArr.push(deptChoices);
+        });
+        return deptArr;
+      }
     }
   ],
 
@@ -78,13 +102,26 @@ const mainQuestions = {
           roleArr.push(roleChoices);
         });
         return roleArr;
-      },
+      }
     },
     {
-      type: "input",
+      type: "list",
       name: "managerID",
-      message: "Manager ID?",
-      default: ''
+      message: "Employee manager?",
+      choices: function () {
+        managerArr = [{
+          name: "No Manager",
+          value: null
+        }];
+        mngrOptions.forEach((manager) => {
+          const managerChoices = {
+            name: manager.Manager,
+            value: manager.id
+          };
+          managerArr.push(managerChoices);
+        });
+        return managerArr;
+      }
     }
   ]
 };

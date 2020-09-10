@@ -9,7 +9,6 @@ const cTable = require("console.table");
 const startQuestions = require("./questions/startQuestions");
 const mainQuestions = require("./questions/mainQuestions");
 
-
 // Continue or quit function
 anotherTask = () => {
   inquirer.prompt({
@@ -34,34 +33,13 @@ anotherTask = () => {
     })
 };
 
-
-// THis is not working yet, but the roles selection is, so we're pushing that!
-const mngrOptions = [];
-connection.query(`SELECT CONCAT (e.first_name, " ", e.last_name) AS Manager, id FROM employee e where e.role_id = 3`, (err, res) => {
-  if (err) throw err;
-  console.log(`This is the res in mngr query ${res[0].Manager}`);
-  res.forEach(element => {
-    mngrOptions.push(
-      {
-        Manager: element.Manager,
-        id: element.id
-      }
-    )
-  })
-  console.log(`manager options ${mngrOptions}`);
-});
-
 // ***** Function queries to display tables
 // Display the DEPARTMENTS table
 displayDepartments = () => {
+  console.log(`\n`);
   console.log("*** Departments Table ***");
   connection.query("SELECT * FROM department", function (err, res) {
-    if (err) throw err;
-    // Display the Department Table
-    console.log(`ID | Department \n-------------------------------------------`);
-    res.forEach(element => {
-      console.log(`${element.id}  | ${element.name}`);
-    });
+    console.table(res);
     console.log(`\n`);
     anotherTask();
   });
@@ -69,14 +47,11 @@ displayDepartments = () => {
 
 // Display the ROLES table
 displayRoles = () => {
+  console.log(`\n`);
   console.log("*** Roles Table ***");
   connection.query("SELECT * FROM role", function (err, res) {
     if (err) throw err;
-    // Display the Department Table
-    console.log(`ID | Title | Salary | Department ID \n-------------------------------------------`);
-    res.forEach(element => {
-      console.log(` ${element.id} | ${element.title} | ${element.salary} | ${element.department_id}`);
-    });
+    console.table(res);
     console.log(`\n`);
     anotherTask();
   });
@@ -85,6 +60,7 @@ displayRoles = () => {
 
 // Display the EMPLOYEES table
 displayEmployees = () => {
+  console.log(`\n`);
   console.log("*** EMPLOYEES Table ***");
   connection.query(`SELECT CONCAT( e.first_name, " ", e.last_name ) AS Employee, title AS Title, salary AS Salary, name AS Department, CONCAT( m.first_name, " ", m.last_name ) AS Manager
   FROM employee e
@@ -114,7 +90,6 @@ createRecord = () => {
     ]
   })
     .then(choice => {
-      console.log(choice);
       const type = choice.createType;
       switch (type) {
 
@@ -150,7 +125,7 @@ createRecord = () => {
                 {
                   title: input.title,
                   salary: input.salary,
-                  department_id: input.departmentID
+                  department_id: input.deptID
                 },
                 function (err, res) {
                   if (err) throw err;
@@ -167,41 +142,23 @@ createRecord = () => {
         case 'Employee':
           inquirer.prompt(mainQuestions.employee)
             .then(input => {
-              if (input.managerID === '') {
-                connection.query(
-                  "INSERT INTO employee SET ?",
-                  {
-                    first_name: input.firstName,
-                    last_name: input.lastName,
-                    role_id: input.roleID
-                  },
-                  function (err, res) {
-                    if (err) throw err;
-                    console.log(`-`);
-                    console.log(`${input.firstName} ${input.lastName} added to database.`);
-                    console.log(`-`);
-                    displayEmployees();
-                  }
-                )
-              } else {
-                connection.query(
+              connection.query(
 
-                  "INSERT INTO employee SET ?",
-                  {
-                    first_name: input.firstName,
-                    last_name: input.lastName,
-                    role_id: input.roleID,
-                    manager_id: input.managerID
-                  },
-                  function (err, res) {
-                    if (err) throw err;
-                    console.log(`-`);
-                    console.log(`${input.firstName} ${input.lastName} added to database.`);
-                    console.log(`-`);
-                    displayEmployees();
-                  }
-                )
-              }
+                "INSERT INTO employee SET ?",
+                {
+                  first_name: input.firstName,
+                  last_name: input.lastName,
+                  role_id: input.roleID,
+                  manager_id: input.managerID
+                },
+                function (err, res) {
+                  if (err) throw err;
+                  console.log(`-`);
+                  console.log(`${input.firstName} ${input.lastName} added to database.`);
+                  console.log(`-`);
+                  displayEmployees();
+                }
+              )
             });
           break;
 
