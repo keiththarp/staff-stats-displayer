@@ -198,7 +198,15 @@ updateRecord = () => {
   inquirer.prompt(mainQuestions.updateRole)
     .then(input => {
       connection.query(
-        `UPDATE employee SET role_id = ${input.roleID} WHERE id = ${input.empID}`,
+        `UPDATE employee SET ? WHERE ?`,
+        [
+          {
+            role_id: input.roleID
+          },
+          {
+            id: input.empID
+          }
+        ],
 
         function (err, res) {
           if (err) throw err;
