@@ -43,6 +43,21 @@ connection.query(`SELECT * FROM department`, (err, res) => {
   })
 });
 
+// Query for EMPLOYEE ROLE UPDATE
+const empOptions = [];
+connection.query(`SELECT id, role_id, CONCAT (first_name, " ", last_name) AS name FROM employee`, (err, res) => {
+  if (err) throw err;
+  res.forEach(element => {
+    empOptions.push(
+      {
+        name: element.name,
+        id: element.id,
+        role_id: element.role_id
+      }
+    )
+  })
+});
+
 const mainQuestions = {
 
 
@@ -109,7 +124,7 @@ const mainQuestions = {
       name: "managerID",
       message: "Employee manager?",
       choices: function () {
-        managerArr = [{
+        const managerArr = [{
           name: "No Manager",
           value: null
         }];
@@ -123,6 +138,40 @@ const mainQuestions = {
         return managerArr;
       }
     }
+  ],
+  updateRole: [
+    {
+      type: "list",
+      name: "empID",
+      message: "Select employee to update role.",
+      choices: function () {
+        const empArr = [];
+        empOptions.forEach((emp) => {
+          const empChoices = {
+            name: emp.name,
+            value: emp.id
+          };
+          empArr.push(empChoices);
+        });
+        return empArr;
+      }
+    },
+    {
+      type: "list",
+      name: "roleID",
+      message: "Choose new role for employee.",
+      choices: function () {
+        const roleArr = [];
+        roleOptions.forEach((role) => {
+          const roleChoices = {
+            name: role.title,
+            value: role.id
+          };
+          roleArr.push(roleChoices);
+        });
+        return roleArr;
+      }
+    },
   ]
 };
 

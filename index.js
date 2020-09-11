@@ -8,6 +8,7 @@ const cTable = require("console.table");
 // Bring in our question objects
 const startQuestions = require("./questions/startQuestions");
 const mainQuestions = require("./questions/mainQuestions");
+const { updateRole } = require("./questions/mainQuestions");
 
 // Continue or quit function
 anotherTask = () => {
@@ -190,6 +191,23 @@ viewRecord = () => {
           displayRoles();
           break;
       };
+    });
+};
+
+updateRecord = () => {
+  inquirer.prompt(mainQuestions.updateRole)
+    .then(input => {
+      connection.query(
+        `UPDATE employee SET role_id = ${input.roleID} WHERE id = ${input.empID}`,
+
+        function (err, res) {
+          if (err) throw err;
+          console.log(`-`);
+          console.log(`Role changed to in database.`);
+          console.log(`-`);
+          displayEmployees();
+        }
+      )
     });
 };
 
