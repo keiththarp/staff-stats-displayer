@@ -27,7 +27,13 @@ anotherTask = () => {
         start();
       } else {
         console.log(`\n`);
-        console.log("Have a nice day!");
+        console.log(`
+          *****************************
+          |                           |
+          |     Have a nice day!      |
+          |                           |
+          *****************************`
+        );
         console.log(`\n`);
         connection.end();
       }
@@ -242,5 +248,11 @@ start = () => {
 };
 
 // Get the program started with a nice message and a function.
-console.log("\nWelcome to Staff Stats!\n");
+console.log(`
+        *****************************
+        |                           |
+        |  Welcome to Staff Stats!  |
+        |                           |
+        *****************************
+`);
 start();
