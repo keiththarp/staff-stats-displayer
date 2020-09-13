@@ -7,8 +7,11 @@ const cTable = require("console.table");
 
 // Bring in our question objects
 const startQuestions = require("./questions/startQuestions");
-const mainQuestions = require("./questions/mainQuestions");
-const { updateRole } = require("./questions/mainQuestions");
+const {
+  role,
+  employee,
+  updateRole
+} = require("./questions/mainQuestions");
 
 // Continue or quit function
 anotherTask = () => {
@@ -125,7 +128,7 @@ createRecord = () => {
 
         // Create new ROLE record
         case 'Role':
-          inquirer.prompt(mainQuestions.role)
+          inquirer.prompt(role)
             .then(input => {
               connection.query(
                 "INSERT INTO role SET ?",
@@ -147,7 +150,7 @@ createRecord = () => {
 
         // Create new EMPLOYEE record
         case 'Employee':
-          inquirer.prompt(mainQuestions.employee)
+          inquirer.prompt(employee)
             .then(input => {
               connection.query(
 
@@ -201,16 +204,16 @@ viewRecord = () => {
 };
 
 updateRecord = () => {
-  inquirer.prompt(mainQuestions.updateRole)
+  inquirer.prompt(updateRole)
     .then(input => {
       connection.query(
         `UPDATE employee SET ? WHERE ?`,
         [
           {
-            role_id: input.roleID
+            role_id: input.role_id
           },
           {
-            id: input.empID
+            id: input.id
           }
         ],
 

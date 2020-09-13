@@ -1,7 +1,11 @@
-const { roleOptionsQuery, managerOptionsQuery, deptOptionsQuery, employeeOptionsQuery } = require("../database/queries/queries");
+const {
+  roleOptionsQuery,
+  managerOptionsQuery,
+  deptOptionsQuery,
+  employeeOptionsQuery
+} = require("../database/queries/queries");
 
-const mainQuestions = {
-
+module.exports = {
 
   // CREATE NEW ROLE QUESTIONS
   role: [
@@ -79,7 +83,7 @@ const mainQuestions = {
   updateRole: [
     {
       type: "list",
-      name: "empID",
+      name: "id",
       message: "Select employee to update role.",
       choices: async function () {
         let employees;
@@ -93,7 +97,7 @@ const mainQuestions = {
     },
     {
       type: "list",
-      name: "roleID",
+      name: "role_id",
       message: "Choose new role for employee.",
       choices: async function () {
         let roles;
@@ -107,5 +111,3 @@ const mainQuestions = {
     },
   ]
 };
-
-module.exports = mainQuestions;
