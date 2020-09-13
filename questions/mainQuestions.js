@@ -7,6 +7,25 @@ const {
 
 module.exports = {
 
+  startQuestions: {
+    type: "list",
+    name: "CRUD",
+    message: "What would you like to do?",
+    choices: [
+      'Create',
+      'View',
+      'Update'
+    ]
+  },
+
+  // Create new Department Question
+  department:
+  {
+    type: "input",
+    name: "newDepartment",
+    message: "Please enter a name for the new department."
+  },
+
   // CREATE NEW ROLE QUESTIONS
   role: [
     {
@@ -21,7 +40,7 @@ module.exports = {
     },
     {
       type: "list",
-      name: "deptID",
+      name: "department_id",
       message: "Department?",
       choices: async function () {
         let departments;
@@ -39,17 +58,17 @@ module.exports = {
   employee: [
     {
       type: "input",
-      name: "firstName",
+      name: "first_name",
       message: "New employee's first name?",
     },
     {
       type: "input",
-      name: "lastName",
+      name: "last_name",
       message: "Last name?"
     },
     {
       type: "list",
-      name: "roleID",
+      name: "role_id",
       message: "Employee role?",
       choices: async function () {
         let roles;
@@ -63,7 +82,7 @@ module.exports = {
     },
     {
       type: "list",
-      name: "managerID",
+      name: "manager_id",
       message: "Employee manager?",
       choices: async function () {
         let managers = [];
