@@ -192,7 +192,7 @@ updateRecord = () => {
       const { id, role_id } = input;
       const updateRole = await updateRecordQuery(id, role_id);
       console.log(`-`);
-      console.log(`Role changed to in database.`);
+      console.log(`Role changed to in ${role_id} database.`);
       console.log(`-`);
       displayEmployees();
     });
