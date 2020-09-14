@@ -189,10 +189,11 @@ viewRecord = () => {
 updateRecord = () => {
   inquirer.prompt(updateRole)
     .then(async function (input) {
+      console.log(input);
       const { id, role_id } = input;
       const updateRole = await updateRecordQuery(id, role_id);
       console.log(`-`);
-      console.log(`Role changed to in ${role_id} database.`);
+      console.log(`Role changed in database.`);
       console.log(`-`);
       displayEmployees();
     });

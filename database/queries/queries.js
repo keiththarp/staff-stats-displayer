@@ -17,7 +17,7 @@ module.exports = {
   managerOptionsQuery: () => {
     return new Promise((resolve, reject) => {
       // Query for available managers formatted for Inquirer list options
-      connection.query(`SELECT CONCAT (e.first_name, " ", e.last_name) AS name, id AS value FROM employee e where e.role_id = 3`, (err, res) => {
+      connection.query(`SELECT CONCAT (e.first_name, " ", e.last_name) AS name, id AS value FROM employee e where e.role_id = 1`, (err, res) => {
         if (err) reject(err);
         resolve(res);
       });
