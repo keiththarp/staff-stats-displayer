@@ -6,11 +6,27 @@ const inquirer = require("inquirer");
 const cTable = require("console.table");
 
 // Bring in our question objects
-const startQuestions = require("./questions/startQuestions");
-const mainQuestions = require("./questions/mainQuestions");
-const { updateRole } = require("./questions/mainQuestions");
 
-// Continue or quit function
+const {
+  startQuestions,
+  department,
+  role,
+  employee,
+  updateRole
+} = require("./questions/mainQuestions");
+
+// Bring in needed queries object
+const {
+  displayDepartmentsQuery,
+  displayRolesQuery,
+  displayEmployeesQuery,
+  createRoleQuery,
+  createDepartmentQuery,
+  createEmployeeQuery,
+  updateRecordQuery
+} = require("./database/queries/queries");
+
+// Ask user if they'd like to continue or quit
 anotherTask = () => {
   inquirer.prompt({
     type: "list",
@@ -40,47 +56,48 @@ anotherTask = () => {
     })
 };
 
-// ***** Function queries to display tables
+// ***** Functions to display tables
 // Display the DEPARTMENTS table
-displayDepartments = () => {
-  console.log(`\n`);
-  console.log("*** Departments Table ***");
-  connection.query("SELECT * FROM department", function (err, res) {
-    console.table(res);
+async function displayDepartments() {
+  try {
+    console.log(`\n`);
+    console.log("*** Departments Table ***");
+    const display = await displayDepartmentsQuery();
+    console.table(display);
     console.log(`\n`);
     anotherTask();
-  });
+  } catch {
+    console.log(err);
+  }
 };
 
 // Display the ROLES table
-displayRoles = () => {
-  console.log(`\n`);
-  console.log("*** Roles Table ***");
-  connection.query("SELECT * FROM role", function (err, res) {
-    if (err) throw err;
-    console.table(res);
+async function displayRoles() {
+  try {
+    console.log(`\n`);
+    console.log("*** Roles Table ***");
+    const display = await displayRolesQuery();
+    console.table(display);
     console.log(`\n`);
     anotherTask();
-  });
+  } catch {
+    console.log(err);
+  };
 };
 
 
 // Display the EMPLOYEES table
-displayEmployees = () => {
-  console.log(`\n`);
-  console.log("*** EMPLOYEES Table ***");
-  connection.query(`SELECT CONCAT( e.first_name, " ", e.last_name ) AS Employee, title AS Title, salary AS Salary, name AS Department, CONCAT( m.first_name, " ", m.last_name ) AS Manager
-  FROM employee e
-  LEFT JOIN role ON e.role_id = role.id
-  LEFT JOIN department ON role.department_id = department.id
-  LEFT JOIN employee m ON m.id = e.manager_id`,
-    function (err, res) {
-      if (err) throw err;
-      // Display the Department Table
-      console.table(res);
-      console.log(`\n`);
-      anotherTask();
-    });
+async function displayEmployees() {
+  try {
+    console.log(`\n`);
+    console.log("*** EMPLOYEES Table ***");
+    const display = await displayEmployeesQuery();
+    console.table(display);
+    console.log(`\n`);
+    anotherTask();
+  } catch {
+    console.log(err);
+  };
 };
 
 
@@ -102,73 +119,42 @@ createRecord = () => {
 
         // Creat new DEPARTMENT record
         case 'Department':
-          inquirer.prompt({
-            type: "input",
-            name: "newDepartment",
-            message: "Please enter a name for the new department."
-          }).then(input => {
-            connection.query(
-              "INSERT INTO department SET ?",
-              {
-                name: input.newDepartment
-              },
-              function (err, res) {
-                if (err) throw err;
-                console.log(`-`);
-                console.log(`${input.newDepartment} added to database.`);
-                console.log(`-`);
-                displayDepartments();
-              }
-            )
-          });
+          inquirer.prompt(department)
+            .then(async function (input) {
+              const name = input.newDepartment;
+              const newDepartment = await createDepartmentQuery(name);
+              console.log(`-`);
+              console.log(`${input.newDepartment} added to database.`);
+              console.log(`-`);
+              displayDepartments();
+            });
           break;
 
         // Create new ROLE record
         case 'Role':
-          inquirer.prompt(mainQuestions.role)
-            .then(input => {
-              connection.query(
-                "INSERT INTO role SET ?",
-                {
-                  title: input.title,
-                  salary: input.salary,
-                  department_id: input.deptID
-                },
-                function (err, res) {
-                  if (err) throw err;
-                  console.log(`-`);
-                  console.log(`${input.title} added to database.`);
-                  console.log(`-`);
-                  displayRoles();
-                }
-              )
+          inquirer.prompt(role)
+            .then(async function (input) {
+              const { title, salary, department_id } = input;
+              const newRole = await createRoleQuery(title, salary, department_id);
+              console.log(`-`);
+              console.log(`${title} added to database.`);
+              console.log(`-`);
+              displayRoles();
             });
           break;
 
         // Create new EMPLOYEE record
         case 'Employee':
-          inquirer.prompt(mainQuestions.employee)
-            .then(input => {
-              connection.query(
-
-                "INSERT INTO employee SET ?",
-                {
-                  first_name: input.firstName,
-                  last_name: input.lastName,
-                  role_id: input.roleID,
-                  manager_id: input.managerID
-                },
-                function (err, res) {
-                  if (err) throw err;
-                  console.log(`-`);
-                  console.log(`${input.firstName} ${input.lastName} added to database.`);
-                  console.log(`-`);
-                  displayEmployees();
-                }
-              )
+          inquirer.prompt(employee)
+            .then(async function (input) {
+              const { first_name, last_name, role_id, manager_id } = input;
+              const newEmployee = await createEmployeeQuery(first_name, last_name, role_id, manager_id);
+              console.log(`-`);
+              console.log(`${first_name} ${last_name} added to database.`);
+              console.log(`-`);
+              displayEmployees();
             });
           break;
-
       };
     });
 };
@@ -201,27 +187,15 @@ viewRecord = () => {
 };
 
 updateRecord = () => {
-  inquirer.prompt(mainQuestions.updateRole)
-    .then(input => {
-      connection.query(
-        `UPDATE employee SET ? WHERE ?`,
-        [
-          {
-            role_id: input.roleID
-          },
-          {
-            id: input.empID
-          }
-        ],
-
-        function (err, res) {
-          if (err) throw err;
-          console.log(`-`);
-          console.log(`Role changed to in database.`);
-          console.log(`-`);
-          displayEmployees();
-        }
-      )
+  inquirer.prompt(updateRole)
+    .then(async function (input) {
+      console.log(input);
+      const { id, role_id } = input;
+      const updateRole = await updateRecordQuery(id, role_id);
+      console.log(`-`);
+      console.log(`Role changed in database.`);
+      console.log(`-`);
+      displayEmployees();
     });
 };
 
