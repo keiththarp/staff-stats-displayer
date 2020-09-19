@@ -2,12 +2,13 @@ const mysql = require("mysql");
 
 // connection information for the sql database
 const connection = mysql.createConnection({
-  host: "localhost",
+  host: DB_HOST,
   port: 3306,
-  user: "root",
-  password: "<07KT&44kt>",
+  user: DB_USER,
+  password: DB_PASS,
   database: "staff-stats-d"
 });
+
 
 // connecting to the server and DB
 connection.connect(function (err) {

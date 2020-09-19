@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 // Get the database connection
 const connection = require("./database/connection")
 // Inquirer for the questions
